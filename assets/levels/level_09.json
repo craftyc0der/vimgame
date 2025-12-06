@@ -1,0 +1,41 @@
+{
+    "id": "level_09",
+    "name": "The Complex",
+    "description": "Combine your skills.",
+    "layout": [
+        "####################",
+        "#S aaaa ~~~~ bbbb  #",
+        "#       ~~~~       #",
+        "# cccc  ~~~~  dddd #",
+        "#       ~~~~       #",
+        "# eeee  ~~~~  ffffE#",
+        "####################"
+    ],
+    "start_pos": {
+        "x": 1,
+        "y": 1
+    },
+    "target_pos": {
+        "x": 18,
+        "y": 5
+    },
+    "allowed_keys": [
+        "h",
+        "j",
+        "k",
+        "l",
+        "w",
+        "e",
+        "b",
+        "0",
+        "$",
+        "H",
+        "M",
+        "L",
+        "}"
+    ],
+    "trained_commands": ["w", "e", "b", "0", "$", "H", "M", "L", "}"],
+    "tutorial_text": "Combine your skills!\nUse any advanced motion (w, e, b, 0, $, H, M, L, }) to navigate.\nAvoid using basic h, j, k, l.",
+    "par_time": 20.0,
+    "par_keystrokes": 10
+}

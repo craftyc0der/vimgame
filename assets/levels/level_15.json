@@ -1,0 +1,15 @@
+{
+  "id": "level_15",
+  "name": "Third Time's the Charm",
+  "description": "Use 'n' to find the 3rd 'door'.",
+  "layout": [
+    "S door door door"
+  ],
+  "start_pos": { "x": 0, "y": 0 },
+  "target_pos": { "x": 12, "y": 0 },
+  "allowed_keys": ["/", "n", "Enter"],
+  "trained_commands": ["NextMatch"],
+  "tutorial_text": "Search for 'door', then press 'n' twice.",
+  "par_time": 5.0,
+  "par_keystrokes": 10
+}

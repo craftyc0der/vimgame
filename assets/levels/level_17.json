@@ -1,0 +1,15 @@
+{
+  "id": "level_17",
+  "name": "Minefield",
+  "description": "Clear the path! Walking through X is slow.",
+  "layout": [
+    "SXXXXXE"
+  ],
+  "start_pos": { "x": 0, "y": 0 },
+  "target_pos": { "x": 6, "y": 0 },
+  "allowed_keys": ["l", "x"],
+  "trained_commands": [],
+  "tutorial_text": "Delete the X's to save time.",
+  "par_time": 5.0,
+  "par_keystrokes": 15
+}

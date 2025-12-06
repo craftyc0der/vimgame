@@ -1,0 +1,38 @@
+{
+    "id": "level_07",
+    "name": "Screen Jumps",
+    "description": "Use H (Top), M (Mid), L (Bot) to teleport vertically.",
+    "layout": [
+        "####################",
+        "#S      #          #",
+        "#       #          #",
+        "#       #          #",
+        "#       #          #",
+        "#       #          #",
+        "#       #          #",
+        "#       #          #",
+        "#       #         E#",
+        "####################"
+    ],
+    "start_pos": {
+        "x": 1,
+        "y": 1
+    },
+    "target_pos": {
+        "x": 18,
+        "y": 8
+    },
+    "allowed_keys": [
+        "h",
+        "j",
+        "k",
+        "l",
+        "H",
+        "M",
+        "L"
+    ],
+    "trained_commands": ["H", "M", "L"],
+    "tutorial_text": "Screen motions (Capital letters):\nH (Shift+h) -> High (Top of screen)\nM (Shift+m) -> Middle of screen\nL (Shift+l) -> Low (Bottom of screen)",
+    "par_time": 5.0,
+    "par_keystrokes": 3
+}

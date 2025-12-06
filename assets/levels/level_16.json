@@ -1,0 +1,17 @@
+{
+  "id": "level_16",
+  "name": "Breakout",
+  "description": "Use 'x' to clear the rubble (X).",
+  "layout": [
+    "#######",
+    "#S X E#",
+    "#######"
+  ],
+  "start_pos": { "x": 1, "y": 1 },
+  "target_pos": { "x": 5, "y": 1 },
+  "allowed_keys": ["h", "j", "k", "l", "x"],
+  "trained_commands": ["DeleteChar"],
+  "tutorial_text": "Move to 'X' and press 'x' to clear it.",
+  "par_time": 10.0,
+  "par_keystrokes": 10
+}

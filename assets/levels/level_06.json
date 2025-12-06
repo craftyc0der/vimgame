@@ -1,0 +1,32 @@
+{
+    "id": "level_06",
+    "name": "Line Mastery",
+    "description": "Use '0' and '$' (Shift+4) to jump to start/end of line.",
+    "layout": [
+        "####################",
+        "#S ................#",
+        "#..................#",
+        "#................ E#",
+        "####################"
+    ],
+    "start_pos": {
+        "x": 1,
+        "y": 1
+    },
+    "target_pos": {
+        "x": 18,
+        "y": 3
+    },
+    "allowed_keys": [
+        "h",
+        "j",
+        "k",
+        "l",
+        "0",
+        "$"
+    ],
+    "trained_commands": ["0", "$"],
+    "tutorial_text": "Line motions:\n'0' (Zero) -> Jump to the very START of the line.\n'$' (Shift+4) -> Jump to the very END of the line.",
+    "par_time": 5.0,
+    "par_keystrokes": 4
+}

@@ -1,0 +1,32 @@
+{
+    "id": "level_04",
+    "name": "Precision Landing",
+    "description": "Use 'e' to land on the edge.",
+    "layout": [
+        "####################",
+        "#S aaaaaa ~~~~~~~ E#",
+        "#  ~~~~~~ ~~~~~~~  #",
+        "#  ~~~~~~ bbbbbbb  #",
+        "####################"
+    ],
+    "start_pos": {
+        "x": 1,
+        "y": 1
+    },
+    "target_pos": {
+        "x": 18,
+        "y": 1
+    },
+    "allowed_keys": [
+        "h",
+        "j",
+        "k",
+        "l",
+        "w",
+        "e"
+    ],
+    "trained_commands": ["e"],
+    "tutorial_text": "Use 'e' to jump to the END of the next word.\nSometimes 'w' lands you on the start, but 'e' gets you closer to the edge.",
+    "par_time": 10.0,
+    "par_keystrokes": 4
+}

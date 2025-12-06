@@ -1,0 +1,18 @@
+{
+  "id": "level_19",
+  "name": "Needle in a Haystack",
+  "description": "The exit is hidden. Use '/' to find it.",
+  "layout": [
+    "S ....................",
+    "lorem ipsum dolor sit",
+    "amet consectetur E",
+    "adipiscing elit"
+  ],
+  "start_pos": { "x": 0, "y": 0 },
+  "target_pos": { "x": 17, "y": 2 },
+  "allowed_keys": ["/", "E", "Enter", "h", "j", "k", "l"],
+  "trained_commands": [],
+  "tutorial_text": "Search for 'E'.",
+  "par_time": 5.0,
+  "par_keystrokes": 5
+}

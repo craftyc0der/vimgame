@@ -1,0 +1,17 @@
+{
+  "id": "level_12",
+  "name": "The Brake",
+  "description": "Use 't' to jump until a character (stop before it).",
+  "layout": [
+    "####################",
+    "#S  X   Y   Z   ~ E#",
+    "####################"
+  ],
+  "start_pos": { "x": 1, "y": 1 },
+  "target_pos": { "x": 18, "y": 1 },
+  "allowed_keys": ["t", ";", ","],
+  "trained_commands": ["t", ";", ","],
+  "tutorial_text": "Use 't' followed by a character to jump right BEFORE it.\nExample: 't X' jumps to the space before 'X'.\nUseful for stopping before hazards!",
+  "par_time": 10.0,
+  "par_keystrokes": 5
+}

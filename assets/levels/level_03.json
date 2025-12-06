@@ -1,0 +1,29 @@
+{
+    "id": "level_03",
+    "name": "The Long Jump",
+    "description": "Use 'w' to leap across the void.",
+    "layout": [
+        "####################",
+        "#S aaaa ~~~~ bbbb E#",
+        "####################"
+    ],
+    "start_pos": {
+        "x": 1,
+        "y": 1
+    },
+    "target_pos": {
+        "x": 18,
+        "y": 1
+    },
+    "allowed_keys": [
+        "h",
+        "j",
+        "k",
+        "l",
+        "w"
+    ],
+    "trained_commands": ["w"],
+    "tutorial_text": "Use 'w' to jump forward to the start of the next word.\nThis is much faster than pressing 'l' multiple times!",
+    "par_time": 5.0,
+    "par_keystrokes": 2
+}
