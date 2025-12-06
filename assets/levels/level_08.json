@@ -1,0 +1,36 @@
+{
+    "id": "level_08",
+    "name": "Void Leaping",
+    "description": "Use '}' to jump over the void.",
+    "layout": [
+        "####################",
+        "#S aaaa            #",
+        "#..................#",
+        "~~~~~~~~~~~~~~~~~~~~",
+        "~~~~~~~~~~~~~~~~~~~~",
+        "#  bbbb            #",
+        "#..................#",
+        "~~~~~~~~~~~~~~~~~~~~",
+        "#                 E#",
+        "####################"
+    ],
+    "start_pos": {
+        "x": 1,
+        "y": 1
+    },
+    "target_pos": {
+        "x": 18,
+        "y": 8
+    },
+    "allowed_keys": [
+        "h",
+        "j",
+        "k",
+        "l",
+        "}"
+    ],
+    "trained_commands": ["}"],
+    "tutorial_text": "Paragraph motions:\n'}' (Shift+]) -> Jump forward to the next empty line.\nUse it to hop between the safe islands (empty lines) and reach the goal.",
+    "par_time": 10.0,
+    "par_keystrokes": 3
+}

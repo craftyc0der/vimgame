@@ -1,0 +1,21 @@
+{
+  "id": "level_02",
+  "name": "Island Hopping",
+  "description": "Use w, b, e to jump across the water (~). Don't fall in!",
+  "layout": [
+    "~~~~~~~~~~~~~~~~~~~~",
+    "~S.start~~~~~~~~~~~~",
+    "~~~~~~~island~~~~~~~",
+    "~~~~~~~~~~~~~rock~~~",
+    "~~~boulder~~~~~~~~~~",
+    "~~~~~~~~~~~~~E~~~~~~",
+    "~~~~~~~~~~~~~~~~~~~~"
+  ],
+  "start_pos": {"x": 1, "y": 1},
+  "target_pos": {"x": 13, "y": 5},
+  "allowed_keys": ["h", "j", "k", "l", "w", "b", "e"],
+  "trained_commands": ["w", "b", "e"],
+  "tutorial_text": "Use word motions to jump over water!\n\nw - Jump to start of next word\nb - Jump to start of previous word\ne - Jump to end of current word\n\nAvoid the '~' water tiles!\nUsing h,j,k,l is allowed but penalized.",
+  "par_time": 15.0,
+  "par_keystrokes": 10
+}

@@ -1,0 +1,31 @@
+{
+    "id": "level_05",
+    "name": "The Rewind",
+    "description": "Use 'b' to retreat.",
+    "layout": [
+        "####################",
+        "#E aaaa bbbb cccc S#",
+        "####################"
+    ],
+    "start_pos": {
+        "x": 17,
+        "y": 1
+    },
+    "target_pos": {
+        "x": 1,
+        "y": 1
+    },
+    "allowed_keys": [
+        "h",
+        "j",
+        "k",
+        "l",
+        "w",
+        "e",
+        "b"
+    ],
+    "trained_commands": ["b"],
+    "tutorial_text": "Use 'b' to jump BACK to the start of the previous word.\nEssential for corrections or moving left quickly.",
+    "par_time": 8.0,
+    "par_keystrokes": 3
+}

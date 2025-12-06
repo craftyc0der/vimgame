@@ -1,0 +1,41 @@
+{
+    "id": "level_10",
+    "name": "Grandmaster",
+    "description": "Prove your mastery.",
+    "layout": [
+        "####################",
+        "#S aaaa  bb  cccc  #",
+        "#  ~~~~  ~~  ~~~~  #",
+        "#  dddd  ee  ffff  #",
+        "#  ~~~~  ~~  ~~~~  #",
+        "#  gggg  hh  iiii E#",
+        "####################"
+    ],
+    "start_pos": {
+        "x": 1,
+        "y": 1
+    },
+    "target_pos": {
+        "x": 18,
+        "y": 5
+    },
+    "allowed_keys": [
+        "h",
+        "j",
+        "k",
+        "l",
+        "w",
+        "e",
+        "b",
+        "0",
+        "$",
+        "H",
+        "M",
+        "L",
+        "}"
+    ],
+    "trained_commands": ["w", "e", "b", "0", "$", "H", "M", "L", "}"],
+    "tutorial_text": "Grandmaster Challenge.\nProve your mastery of VIM motions.\nEfficiency is key. Avoid h, j, k, l.",
+    "par_time": 30.0,
+    "par_keystrokes": 15
+}
