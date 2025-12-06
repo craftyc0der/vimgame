@@ -5,7 +5,7 @@ A puzzle game designed to help you master Vim navigation keys (`h`, `j`, `k`, `l
 ## 🎮 Play Online
 
 You can play the latest version of the game directly in your browser:
-[**Play VimGame**](https://<your-username>.github.io/vimgame/)
+[**Play VimGame**](https://craftyc0der.github.io/vimgame/)
 
 ## ✨ Features
 
