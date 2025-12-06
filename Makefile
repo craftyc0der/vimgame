@@ -34,7 +34,6 @@ build-web: setup-web
 	# We use rsync or cp -r. Using cp -r for simplicity, but excluding index.html to avoid overwrite warning if it was in assets
 	mkdir -p $(DIST_DIR)/assets
 	cp -r assets/levels $(DIST_DIR)/assets/
-	cp -r assets/textures $(DIST_DIR)/assets/
 	# Download macroquad js bundle if not present
 	test -f $(DIST_DIR)/mq_js_bundle.js || curl -L https://raw.githubusercontent.com/not-fl3/macroquad/master/js/mq_js_bundle.js -o $(DIST_DIR)/mq_js_bundle.js
 
