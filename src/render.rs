@@ -1,4 +1,5 @@
-use crate::game::{GameState, GameStatus};
+use crate::game::{GameState, GameStatus, InputMode};
+use crate::input::VimCommand;
 use macroquad::prelude::*;
 
 pub struct Resources {
@@ -68,6 +69,9 @@ pub fn draw_game(state: &GameState, resources: &Resources, cell_size: f32) {
                         };
 
                         draw_platform(screen_x, screen_y, cell_size, is_left_word, is_right_word);
+
+                        // Draw the character on top of the platform
+                        draw_text_centered(&c.to_string(), screen_x, screen_y, cell_size, BLACK);
                     } else {
                         // Unknown char, just draw text
                         draw_text_centered(
@@ -395,8 +399,8 @@ fn draw_ui(state: &GameState) {
         draw_rectangle_lines(box_x, box_y, box_width, box_height, 2.0, YELLOW);
 
         draw_text("AUTO-PLAYING...", box_x + 20.0, box_y + 30.0, 30.0, YELLOW);
-        if let Some(cmd) = state.last_auto_command {
-            let cmd_text = format!("Command: {:?}", cmd);
+        if let Some(cmd) = &state.last_auto_command {
+            let cmd_text = cmd.to_display_string();
             let dims = measure_text(&cmd_text, None, 30, 1.0);
             draw_text(
                 &cmd_text,
@@ -407,6 +411,48 @@ fn draw_ui(state: &GameState) {
             );
         }
     }
+
+    // Draw Input Mode Status
+    match &state.input_mode {
+        InputMode::WaitingForChar(cmd) => {
+            let cmd_name = match cmd {
+                VimCommand::StartFindNext => "f",
+                VimCommand::StartFindPrev => "F",
+                VimCommand::StartTillNext => "t",
+                VimCommand::StartTillPrev => "T",
+                _ => "?",
+            };
+            draw_text(
+                &format!("Waiting for char: {}", cmd_name),
+                10.0,
+                screen_height() - 40.0,
+                30.0,
+                YELLOW,
+            );
+        }
+        InputMode::CommandLine(text, cmd_type) => {
+            let prefix = match cmd_type {
+                VimCommand::StartSearchForward => "/",
+                VimCommand::StartSearchBackward => "?",
+                _ => ":",
+            };
+            let display_text = format!("{}{}", prefix, text);
+            draw_text(&display_text, 10.0, screen_height() - 40.0, 30.0, YELLOW);
+            // Draw cursor
+            let dims = measure_text(&display_text, None, 30, 1.0);
+            if (get_time() * 2.0) as i32 % 2 == 0 {
+                draw_rectangle(
+                    10.0 + dims.width,
+                    screen_height() - 60.0,
+                    10.0,
+                    30.0,
+                    YELLOW,
+                );
+            }
+        }
+        _ => {}
+    }
+
     draw_text(
         "Press ESC to Menu | ? for Help | Shift+P to Solve",
         10.0,

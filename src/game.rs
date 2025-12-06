@@ -2,6 +2,13 @@ use crate::input::{InputHandler, VimCommand};
 use crate::level::{Level, Position};
 use std::collections::VecDeque;
 
+#[derive(Debug, PartialEq, Clone)]
+pub enum InputMode {
+    Normal,
+    WaitingForChar(VimCommand), // Stores the pending command (e.g. StartFindNext)
+    CommandLine(String, VimCommand), // Stores current input and type (StartSearchForward/Backward)
+}
+
 pub enum GameStatus {
     Playing,
     LevelComplete,
@@ -23,6 +30,10 @@ pub struct GameState {
     pub is_auto_playing: bool,
     pub last_auto_command: Option<VimCommand>,
     pub level_complete_timer: f32,
+    pub input_mode: InputMode,
+    pub last_find_command: Option<VimCommand>,
+    pub last_search_query: Option<String>,
+    pub search_direction_forward: bool,
 }
 
 impl GameState {
@@ -48,6 +59,10 @@ impl GameState {
             is_auto_playing: false,
             last_auto_command: None,
             level_complete_timer: 0.0,
+            input_mode: InputMode::Normal,
+            last_find_command: None,
+            last_search_query: None,
+            search_direction_forward: true,
         }
     }
 
@@ -73,7 +88,7 @@ impl GameState {
                         // Move every 0.8 seconds
                         self.replay_timer = 0.0;
                         if let Some(cmd) = self.replay_queue.pop_front() {
-                            self.last_auto_command = Some(cmd);
+                            self.last_auto_command = Some(cmd.clone());
                             self.handle_command(cmd);
                         } else {
                             self.is_auto_playing = false;
@@ -91,7 +106,7 @@ impl GameState {
 
     pub fn handle_command(&mut self, command: VimCommand) {
         if let GameStatus::Playing = self.status {
-            match command {
+            match &command {
                 VimCommand::MoveLeft => self.move_player(-1, 0),
                 VimCommand::MoveRight => self.move_player(1, 0),
                 VimCommand::MoveUp => self.move_player(0, -1),
@@ -106,10 +121,40 @@ impl GameState {
                 VimCommand::MoveScreenBottom => self.move_screen_bottom(),
                 VimCommand::MoveParagraphForward => self.move_paragraph_forward(),
                 VimCommand::MoveParagraphBack => self.move_paragraph_back(),
+                VimCommand::StartFindNext
+                | VimCommand::StartFindPrev
+                | VimCommand::StartTillNext
+                | VimCommand::StartTillPrev => {
+                    self.input_mode = InputMode::WaitingForChar(command.clone());
+                }
+                VimCommand::StartSearchForward | VimCommand::StartSearchBackward => {
+                    self.input_mode = InputMode::CommandLine(String::new(), command.clone());
+                }
+                VimCommand::FindNextChar(c) => self.find_char_forward(*c),
+                VimCommand::FindPrevChar(c) => self.find_char_backward(*c),
+                VimCommand::TillNextChar(c) => self.till_char_forward(*c),
+                VimCommand::TillPrevChar(c) => self.till_char_backward(*c),
+                VimCommand::RepeatFind => self.repeat_find(false),
+                VimCommand::RepeatFindReverse => self.repeat_find(true),
+                VimCommand::SearchForward(s) => self.search_forward(s),
+                VimCommand::SearchBackward(s) => self.search_backward(s),
+                VimCommand::NextMatch => self.next_match(),
+                VimCommand::PrevMatch => self.prev_match(),
+                VimCommand::DeleteChar => self.delete_char(),
                 _ => {} // Implement other commands later
             }
 
-            if command != VimCommand::None {
+            if command != VimCommand::None
+                && !matches!(
+                    command,
+                    VimCommand::StartFindNext
+                        | VimCommand::StartFindPrev
+                        | VimCommand::StartTillNext
+                        | VimCommand::StartTillPrev
+                        | VimCommand::StartSearchForward
+                        | VimCommand::StartSearchBackward
+                )
+            {
                 self.keystrokes += 1;
 
                 // Check penalty
@@ -125,6 +170,312 @@ impl GameState {
         }
     }
 
+    pub fn handle_char_input(&mut self, c: char) {
+        match &self.input_mode {
+            InputMode::WaitingForChar(cmd) => {
+                let next_cmd = match cmd {
+                    VimCommand::StartFindNext => VimCommand::FindNextChar(c),
+                    VimCommand::StartFindPrev => VimCommand::FindPrevChar(c),
+                    VimCommand::StartTillNext => VimCommand::TillNextChar(c),
+                    VimCommand::StartTillPrev => VimCommand::TillPrevChar(c),
+                    _ => VimCommand::None,
+                };
+                self.input_mode = InputMode::Normal;
+                if next_cmd != VimCommand::None {
+                    self.last_find_command = Some(next_cmd.clone());
+                    self.handle_command(next_cmd);
+                }
+            }
+            InputMode::CommandLine(current_text, cmd_type) => {
+                // This is handled in handle_command_line_input usually, but if we get char here:
+                let mut new_text = current_text.clone();
+                new_text.push(c);
+                self.input_mode = InputMode::CommandLine(new_text, cmd_type.clone());
+            }
+            _ => {}
+        }
+    }
+
+    pub fn handle_special_key(&mut self, key: macroquad::input::KeyCode) {
+        if let InputMode::CommandLine(ref mut text, ref cmd_type) = self.input_mode.clone() {
+            match key {
+                macroquad::input::KeyCode::Enter => {
+                    let final_cmd = match cmd_type {
+                        VimCommand::StartSearchForward => VimCommand::SearchForward(text.clone()),
+                        VimCommand::StartSearchBackward => VimCommand::SearchBackward(text.clone()),
+                        _ => VimCommand::None,
+                    };
+                    self.input_mode = InputMode::Normal;
+                    if final_cmd != VimCommand::None {
+                        self.last_search_query = Some(text.clone());
+                        self.search_direction_forward =
+                            matches!(cmd_type, VimCommand::StartSearchForward);
+                        self.handle_command(final_cmd);
+                    }
+                }
+                macroquad::input::KeyCode::Backspace => {
+                    let mut new_text = text.clone();
+                    new_text.pop();
+                    self.input_mode = InputMode::CommandLine(new_text, cmd_type.clone());
+                }
+                macroquad::input::KeyCode::Escape => {
+                    self.input_mode = InputMode::Normal;
+                }
+                _ => {}
+            }
+        }
+    }
+
+    fn find_char_forward(&mut self, target: char) {
+        let y = self.player_pos.y;
+        let start_x = self.player_pos.x + 1;
+        let width = self.current_level.width();
+
+        for x in start_x..width {
+            if self.get_char_at(x, y) == target {
+                if !self.current_level.is_wall(x, y) {
+                    self.player_pos.x = x;
+                    if self.get_char_at(x, y) == '~' {
+                        self.status = GameStatus::GameOver;
+                    }
+                }
+                return;
+            }
+        }
+    }
+
+    fn find_char_backward(&mut self, target: char) {
+        let y = self.player_pos.y;
+        let start_x = self.player_pos.x;
+        if start_x == 0 {
+            return;
+        }
+
+        for x in (0..start_x).rev() {
+            if self.get_char_at(x, y) == target {
+                if !self.current_level.is_wall(x, y) {
+                    self.player_pos.x = x;
+                    if self.get_char_at(x, y) == '~' {
+                        self.status = GameStatus::GameOver;
+                    }
+                }
+                return;
+            }
+        }
+    }
+
+    fn till_char_forward(&mut self, target: char) {
+        let y = self.player_pos.y;
+        let start_x = self.player_pos.x + 1;
+        let width = self.current_level.width();
+
+        for x in start_x..width {
+            if self.get_char_at(x, y) == target {
+                let target_x = x - 1;
+                if target_x > self.player_pos.x && !self.current_level.is_wall(target_x, y) {
+                    self.player_pos.x = target_x;
+                    if self.get_char_at(target_x, y) == '~' {
+                        self.status = GameStatus::GameOver;
+                    }
+                }
+                return;
+            }
+        }
+    }
+
+    fn till_char_backward(&mut self, target: char) {
+        let y = self.player_pos.y;
+        let start_x = self.player_pos.x;
+        if start_x == 0 {
+            return;
+        }
+
+        for x in (0..start_x).rev() {
+            if self.get_char_at(x, y) == target {
+                let target_x = x + 1;
+                if target_x < self.player_pos.x && !self.current_level.is_wall(target_x, y) {
+                    self.player_pos.x = target_x;
+                    if self.get_char_at(target_x, y) == '~' {
+                        self.status = GameStatus::GameOver;
+                    }
+                }
+                return;
+            }
+        }
+    }
+
+    fn repeat_find(&mut self, reverse: bool) {
+        if let Some(cmd) = self.last_find_command.clone() {
+            let cmd_to_run = if reverse {
+                match cmd {
+                    VimCommand::FindNextChar(c) => VimCommand::FindPrevChar(c),
+                    VimCommand::FindPrevChar(c) => VimCommand::FindNextChar(c),
+                    VimCommand::TillNextChar(c) => VimCommand::TillPrevChar(c),
+                    VimCommand::TillPrevChar(c) => VimCommand::TillNextChar(c),
+                    _ => return,
+                }
+            } else {
+                cmd
+            };
+            self.handle_command(cmd_to_run);
+        }
+    }
+
+    fn search_forward(&mut self, query: &str) {
+        // Simple linear search from current pos
+        // Flatten coordinates? Or just loop y then x
+        let width = self.current_level.width();
+        let height = self.current_level.height();
+
+        let mut x = self.player_pos.x;
+        let mut y = self.player_pos.y;
+
+        // Start from next char
+        loop {
+            x += 1;
+            if x >= width {
+                x = 0;
+                y += 1;
+            }
+            if y >= height {
+                y = 0; // Wrap around? Vim wraps.
+            }
+
+            if x == self.player_pos.x && y == self.player_pos.y {
+                break; // Full loop
+            }
+
+            // Check match
+            if self.check_match_at(x, y, query) {
+                if !self.current_level.is_wall(x, y) {
+                    self.player_pos.x = x;
+                    self.player_pos.y = y;
+                    if self.get_char_at(x, y) == '~' {
+                        self.status = GameStatus::GameOver;
+                    }
+                }
+                return;
+            }
+        }
+    }
+
+    fn search_backward(&mut self, query: &str) {
+        let width = self.current_level.width();
+        let height = self.current_level.height();
+
+        let mut x = self.player_pos.x;
+        let mut y = self.player_pos.y;
+
+        loop {
+            if x == 0 {
+                x = width - 1;
+                if y == 0 {
+                    y = height - 1;
+                } else {
+                    y -= 1;
+                }
+            } else {
+                x -= 1;
+            }
+
+            if x == self.player_pos.x && y == self.player_pos.y {
+                break;
+            }
+
+            if self.check_match_at(x, y, query) {
+                if !self.current_level.is_wall(x, y) {
+                    self.player_pos.x = x;
+                    self.player_pos.y = y;
+                    if self.get_char_at(x, y) == '~' {
+                        self.status = GameStatus::GameOver;
+                    }
+                }
+                return;
+            }
+        }
+    }
+
+    fn check_match_at(&self, x: usize, y: usize, query: &str) -> bool {
+        // Check if query matches starting at x, y
+        // Only horizontal matches for now
+        let width = self.current_level.width();
+        if x + query.len() > width {
+            return false;
+        }
+
+        for (i, c) in query.chars().enumerate() {
+            if self.get_char_at(x + i, y) != c {
+                return false;
+            }
+        }
+        true
+    }
+
+    fn next_match(&mut self) {
+        if let Some(query) = self.last_search_query.clone() {
+            if self.search_direction_forward {
+                self.search_forward(&query);
+            } else {
+                self.search_backward(&query);
+            }
+        }
+    }
+
+    fn prev_match(&mut self) {
+        if let Some(query) = self.last_search_query.clone() {
+            if self.search_direction_forward {
+                self.search_backward(&query);
+            } else {
+                self.search_forward(&query);
+            }
+        }
+    }
+
+    fn delete_char(&mut self) {
+        let x = self.player_pos.x;
+        let y = self.player_pos.y;
+
+        // Can only delete if it's a wall or something?
+        // Plan says: "Some walls (represented by X or %) are breakable."
+        // But player is ON the tile. Player cannot be on a wall.
+        // So player must be on top of 'X' or '%' which acts as floor but blocks path?
+        // Or maybe 'x' deletes the character UNDER the cursor.
+        // If the character is 'X', it becomes '.' (floor).
+
+        // Wait, if 'X' is a wall, player cannot be on it.
+        // Maybe 'x' deletes the character to the RIGHT? No, vim 'x' deletes under cursor.
+        // So 'X' must be a walkable tile that acts as an obstacle for something else?
+        // OR, maybe the level design has 'X' as a "breakable wall" that you can stand next to and break?
+        // But vim 'x' is "delete character under cursor".
+
+        // Let's assume 'X' is a walkable tile that represents "rubble" or "weak floor" that you need to clear?
+        // OR, maybe we change the mechanic: 'x' deletes the character under cursor.
+        // If you are standing on 'X', and you press 'x', it turns to '.'.
+        // Maybe 'X' has high friction or penalty?
+
+        // Re-reading plan: "The player must move to them and press x to turn them into floor tiles, opening a path."
+        // This implies 'X' is walkable.
+        // Maybe 'X' prevents you from moving PAST it? No.
+        // Maybe 'X' is just a visual obstacle that you need to clear to "solve" the level?
+        // Or maybe 'X' is surrounded by void, and clearing it spawns a bridge?
+
+        // Let's just implement: 'x' replaces current char with '.' if it is not already '.' or 'S' or 'E'.
+        // And maybe specific chars like 'X' trigger something.
+
+        // For now: 'x' turns current tile to '.'
+
+        if y < self.current_level.layout.len() {
+            let row = &mut self.current_level.layout[y];
+            if x < row.len() {
+                let mut chars: Vec<char> = row.chars().collect();
+                if chars[x] != 'S' && chars[x] != 'E' {
+                    chars[x] = '.';
+                    self.current_level.layout[y] = chars.into_iter().collect();
+                }
+            }
+        }
+    }
+
     fn move_player(&mut self, dx: i32, dy: i32) {
         let new_x = self.player_pos.x as i32 + dx;
         let new_y = self.player_pos.y as i32 + dy;
@@ -137,11 +488,22 @@ impl GameState {
                 self.player_pos.x = x;
                 self.player_pos.y = y;
 
+                // Apply terrain cost
+                let cost = self.get_terrain_cost(x, y);
+                self.time_elapsed += cost;
+
                 // Check for hazard (Void/Ravine)
                 if self.get_char_at(x, y) == '~' {
                     self.status = GameStatus::GameOver;
                 }
             }
+        }
+    }
+
+    fn get_terrain_cost(&self, x: usize, y: usize) -> f32 {
+        match self.get_char_at(x, y) {
+            'X' => 5.0, // High cost for rubble/mud
+            _ => 0.0,
         }
     }
 
@@ -641,5 +1003,43 @@ mod tests {
         // Should skip line 7 (water)
         game.handle_command(VimCommand::MoveParagraphForward);
         assert_eq!(game.player_pos.y, 8);
+    }
+
+    #[test]
+    fn test_find_char_movement() {
+        let level = Level {
+            id: "find_test".to_string(),
+            name: "Find Test".to_string(),
+            description: "Test".to_string(),
+            layout: vec![
+                "a b c d".to_string(), // 0123456
+            ],
+            start_pos: Position { x: 0, y: 0 },
+            target_pos: Position { x: 6, y: 0 },
+            allowed_keys: vec![],
+            trained_commands: vec![],
+            tutorial_text: String::new(),
+            par_time: 10.0,
+            par_keystrokes: 5,
+        };
+        let mut game = GameState::new(level);
+
+        // Start at 'a' (0,0)
+
+        // f c -> (4,0)
+        game.handle_command(VimCommand::StartFindNext);
+        if let InputMode::WaitingForChar(_) = game.input_mode {
+            game.handle_char_input('c');
+        }
+        assert_eq!(game.player_pos.x, 4);
+
+        // ; -> repeats 'f c'. No next 'c', so stay.
+        game.handle_command(VimCommand::RepeatFind);
+        assert_eq!(game.player_pos.x, 4);
+
+        // F a -> (0,0)
+        game.handle_command(VimCommand::StartFindPrev);
+        game.handle_char_input('a');
+        assert_eq!(game.player_pos.x, 0);
     }
 }

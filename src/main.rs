@@ -6,7 +6,7 @@ mod level;
 mod render;
 mod solver;
 
-use game::{GameState, GameStatus};
+use game::{GameState, GameStatus, InputMode};
 use input::InputHandler;
 use level::Level;
 
@@ -32,6 +32,16 @@ async fn main() {
         "assets/levels/level_08.json",
         "assets/levels/level_09.json",
         "assets/levels/level_10.json",
+        "assets/levels/level_11.json",
+        "assets/levels/level_12.json",
+        "assets/levels/level_13.json",
+        "assets/levels/level_14.json",
+        "assets/levels/level_15.json",
+        "assets/levels/level_16.json",
+        "assets/levels/level_17.json",
+        "assets/levels/level_18.json",
+        "assets/levels/level_19.json",
+        "assets/levels/level_20.json",
     ];
 
     let mut current_level_index: Option<usize> = None;
@@ -91,28 +101,45 @@ async fn main() {
 
             // Input
             if let Some(key) = get_last_key_pressed() {
-                if key == KeyCode::Escape {
-                    should_exit_to_menu = true;
-                } else if key == KeyCode::Slash
-                    && (is_key_down(KeyCode::LeftShift) || is_key_down(KeyCode::RightShift))
-                {
-                    state.toggle_help();
-                } else if key == KeyCode::P
-                    && (is_key_down(KeyCode::LeftShift) || is_key_down(KeyCode::RightShift))
-                {
-                    // Auto-play / Solve
-                    let solver = Solver::new(state.current_level.clone());
-                    if let Some(solution) = solver.solve() {
-                        state.start_auto_play(solution);
+                let mut handled = false;
+                if !matches!(state.input_mode, InputMode::Normal) {
+                    state.handle_special_key(key);
+                    if let Some(c) = get_char_pressed() {
+                        if key != KeyCode::Enter
+                            && key != KeyCode::Backspace
+                            && key != KeyCode::Escape
+                        {
+                            state.handle_char_input(c);
+                        }
                     }
-                } else if let GameStatus::LevelComplete = state.status {
-                    if key == KeyCode::Enter {
-                        should_load_next_level = true;
+                    handled = true;
+                }
+
+                if !handled {
+                    if key == KeyCode::Escape {
+                        should_exit_to_menu = true;
+                    } else if key == KeyCode::Slash
+                        && (is_key_down(KeyCode::LeftShift) || is_key_down(KeyCode::RightShift))
+                    {
+                        state.toggle_help();
+                    } else if key == KeyCode::P
+                        && (is_key_down(KeyCode::LeftShift) || is_key_down(KeyCode::RightShift))
+                    {
+                        // Auto-play / Solve
+                        let solver = Solver::new(state.current_level.clone());
+                        if let Some(solution) = solver.solve() {
+                            state.start_auto_play(solution);
+                        }
+                    } else if let GameStatus::LevelComplete = state.status {
+                        if key == KeyCode::Enter {
+                            should_load_next_level = true;
+                        }
+                    } else {
+                        let shift =
+                            is_key_down(KeyCode::LeftShift) || is_key_down(KeyCode::RightShift);
+                        let command = input_handler.map_key(key, shift);
+                        state.handle_command(command);
                     }
-                } else {
-                    let shift = is_key_down(KeyCode::LeftShift) || is_key_down(KeyCode::RightShift);
-                    let command = input_handler.map_key(key, shift);
-                    state.handle_command(command);
                 }
             }
         }

@@ -1,0 +1,20 @@
+{
+  "id": "level_20",
+  "name": "Trapped",
+  "description": "Break out and find the exit!",
+  "layout": [
+    "XXXXX",
+    "XSXXX",
+    "XXXXX",
+    "....................",
+    "....................",
+    "...................E"
+  ],
+  "start_pos": { "x": 1, "y": 1 },
+  "target_pos": { "x": 19, "y": 5 },
+  "allowed_keys": ["x", "h", "j", "k", "l", "/", "E", "Enter"],
+  "trained_commands": [],
+  "tutorial_text": "You are trapped in rubble. Break out!",
+  "par_time": 10.0,
+  "par_keystrokes": 10
+}

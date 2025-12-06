@@ -1,0 +1,17 @@
+{
+  "id": "level_11",
+  "name": "The Sniper",
+  "description": "Use 'f' to jump to specific characters.",
+  "layout": [
+    "####################",
+    "#S  a   b   c   d E#",
+    "####################"
+  ],
+  "start_pos": { "x": 1, "y": 1 },
+  "target_pos": { "x": 18, "y": 1 },
+  "allowed_keys": ["f", ";", ","],
+  "trained_commands": ["f", ";", ","],
+  "tutorial_text": "Use 'f' followed by a character to jump to it.\nExample: 'f a' jumps to 'a'.\nUse ';' to repeat the last search.\nUse ',' to repeat in reverse.",
+  "par_time": 10.0,
+  "par_keystrokes": 5
+}

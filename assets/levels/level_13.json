@@ -1,0 +1,18 @@
+{
+  "id": "level_13",
+  "name": "The Search",
+  "description": "Use '/' to search for text. Type '/needle' then Enter.",
+  "layout": [
+    "haystack haystack haystack",
+    "haystack haystack haystack",
+    "haystack needle haystack",
+    "haystack haystack haystack"
+  ],
+  "start_pos": { "x": 0, "y": 0 },
+  "target_pos": { "x": 9, "y": 2 },
+  "allowed_keys": ["/", "n", "Enter"],
+  "trained_commands": ["StartSearchForward", "NextMatch"],
+  "tutorial_text": "Type '/' followed by 'needle' and press Enter to jump to it.",
+  "par_time": 5.0,
+  "par_keystrokes": 10
+}

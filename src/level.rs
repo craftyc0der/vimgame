@@ -25,7 +25,7 @@ pub struct Level {
 
 impl Level {
     pub fn width(&self) -> usize {
-        self.layout.first().map_or(0, |row| row.len())
+        self.layout.iter().map(|row| row.len()).max().unwrap_or(0)
     }
 
     pub fn height(&self) -> usize {
@@ -33,10 +33,14 @@ impl Level {
     }
 
     pub fn is_wall(&self, x: usize, y: usize) -> bool {
-        if y >= self.height() || x >= self.width() {
+        if y >= self.height() {
             return true;
         }
-        self.layout[y].chars().nth(x).unwrap_or('.') == '#'
+        let row = &self.layout[y];
+        if x >= row.len() {
+            return true;
+        }
+        row.chars().nth(x).unwrap_or('.') == '#'
     }
 }
 

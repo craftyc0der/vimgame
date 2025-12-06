@@ -1,0 +1,18 @@
+{
+  "id": "level_14",
+  "name": "Looking Back",
+  "description": "Use '?' to search backwards. It wraps around!",
+  "layout": [
+    "S start here.......",
+    "...................",
+    "...................",
+    ".......target is E"
+  ],
+  "start_pos": { "x": 0, "y": 0 },
+  "target_pos": { "x": 17, "y": 3 },
+  "allowed_keys": ["?", "Enter"],
+  "trained_commands": ["StartSearchBackward"],
+  "tutorial_text": "Type '?' followed by 'E' and press Enter.",
+  "par_time": 5.0,
+  "par_keystrokes": 5
+}
