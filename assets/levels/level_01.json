@@ -23,7 +23,7 @@
   "target_pos": {"x": 19, "y": 13},
   "allowed_keys": ["h", "j", "k", "l"],
   "trained_commands": ["h", "j", "k", "l"],
-  "tutorial_text": "Welcome to VIM Game!\n\nUse the basic movement keys:\nh - Left\nj - Down\nk - Up\nl - Right\n\nReach the 'E' to exit.",
+  "tutorial_text": "Welcome to VIM Game!\n\nUse the basic movement keys:\nh - Left\nj - Down\nk - Up\nl - Right\n\nReach the Flag to exit.",
   "par_time": 20.0,
   "par_keystrokes": 60
 }
