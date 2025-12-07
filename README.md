@@ -7,6 +7,22 @@ A puzzle game designed to help you master Vim navigation keys (`h`, `j`, `k`, `l
 You can play the latest version of the game directly in your browser:
 [**Play VimGame**](https://craftyc0der.github.io/vimgame/)
 
+## ⌨️ Controls
+
+### Game Controls
+
+- **`h`, `j`, `k`, `l`**: Move Left, Down, Up, Right
+- **`w`, `b`, `e`**: Move by words
+- **`f`, `t`**: Find character
+- **`/`, `?`**: Search forward/backward
+- **`n`, `N`**: Next/Previous match
+
+### Meta Controls
+
+- **`F1`**: Toggle Help / Tutorial
+- **`Shift + P`**: Auto-Solve Level (AI)
+- **`Esc`**: Return to Menu
+
 ## ✨ Features
 
 - **Vim-based Movement**: Use `h`, `j`, `k`, `l` to move.

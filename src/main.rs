@@ -118,9 +118,7 @@ async fn main() {
                 if !handled {
                     if key == KeyCode::Escape {
                         should_exit_to_menu = true;
-                    } else if key == KeyCode::Slash
-                        && (is_key_down(KeyCode::LeftShift) || is_key_down(KeyCode::RightShift))
-                    {
+                    } else if key == KeyCode::F1 {
                         state.toggle_help();
                     } else if key == KeyCode::P
                         && (is_key_down(KeyCode::LeftShift) || is_key_down(KeyCode::RightShift))

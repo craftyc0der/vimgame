@@ -454,7 +454,7 @@ fn draw_ui(state: &GameState) {
     }
 
     draw_text(
-        "Press ESC to Menu | ? for Help | Shift+P to Solve",
+        "Press ESC to Menu | F1 for Help | Shift+P to Solve",
         10.0,
         screen_height() - 10.0,
         20.0,
@@ -528,7 +528,7 @@ fn draw_help_overlay(state: &GameState) {
     }
 
     draw_text(
-        "Press ? to close",
+        "Press F1 to close",
         screen_width() / 2.0 - 100.0,
         screen_height() - 130.0,
         20.0,
