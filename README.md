@@ -33,7 +33,6 @@ You can play the latest version of the game directly in your browser:
 ## 📸 Screenshot
 
 ![Game Screenshot](assets/screenshot.png)
-*(Note: Please add a screenshot named `screenshot.png` to the `assets` folder)*
 
 ## 🛠️ Installation
 
